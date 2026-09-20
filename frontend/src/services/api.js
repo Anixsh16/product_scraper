@@ -3,7 +3,8 @@
  * Uses relative URLs which are proxied to http://localhost:5000 in dev via vite.config.js.
  */
 
-const BASE_URL = '/api';
+const API_ORIGIN = import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace(/\/$/, '') : '';
+const BASE_URL = `${API_ORIGIN}/api`;
 
 async function handleResponse(res) {
   const data = await res.json().catch(() => ({}));
