@@ -1,0 +1,26 @@
+{
+  "name": "ine-product-price-tracker",
+  "version": "1.0.0",
+  "description": "Full-stack automated product price and stock tracker for the INE mock store",
+  "private": true,
+  "scripts": {
+    "dev": "npm run dev --prefix backend",
+    "dev:backend": "npm run dev --prefix backend",
+    "dev:frontend": "npm run dev --prefix frontend",
+    "start": "npm start --prefix backend",
+    "build": "npm run build --prefix frontend",
+    "migrate": "npm run migrate --prefix backend",
+    "scrape:headed": "npm run scrape:headed --prefix backend",
+    "test:scraper": "npm run test:scraper --prefix backend"
+  },
+  "keywords": [
+    "price-tracker",
+    "scraper",
+    "playwright",
+    "react",
+    "express",
+    "supabase"
+  ],
+  "author": "Anish",
+  "license": "ISC"
+}
