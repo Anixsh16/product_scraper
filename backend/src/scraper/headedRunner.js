@@ -28,14 +28,19 @@ async function main() {
   }
 
   console.log(`Target Product URL: ${targetUrl}`);
-const { scrapeProductWithRetries } = require('../services/scraperService');
+  const { scrapeProductWithRetries } = require('../services/scraperService');
+  const { getAllTrackedProducts } = require('../services/trackingService');
+
+  const trackedProducts = await getAllTrackedProducts().catch(() => []);
+  const matching = trackedProducts.find((p) => p.product_id === String(arg) || p.id === String(arg));
+  const productRecord = matching || {
+    id: (trackedProducts[0] && trackedProducts[0].id) || 'ebea928a-224b-43cf-b3f6-4ac89cd721b9',
+    product_name: matching ? matching.product_name : `Test Product (${arg})`,
+    product_url: targetUrl,
+  };
 
   const result = await scrapeProductWithRetries(
-    {
-      id: arg,
-      product_name: 'Nordkraft Backpack Pro',
-      product_url: targetUrl,
-    },
+    productRecord,
     {
       headless: false,
       slowMo: 180, // Slow down operations by 180ms for visible recording
