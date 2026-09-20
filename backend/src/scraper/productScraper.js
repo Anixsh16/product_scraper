@@ -1,3 +1,6 @@
+if (!process.env.PLAYWRIGHT_BROWSERS_PATH) {
+  process.env.PLAYWRIGHT_BROWSERS_PATH = '0';
+}
 const { chromium } = require('playwright');
 const { parsePrice, parseStock } = require('./priceParser');
 const logger = require('../utils/logger');
@@ -95,11 +98,36 @@ async function scrapeProductPage(productUrl, options = {}) {
     // Adding 1500ms safety margin ensures hoverAt is strictly before challenge ts
     const timeOffset = clockSkew > 500 ? clockSkew + 1500 : 0;
 
-    browser = await chromium.launch({
-      headless,
-      slowMo,
-      args: ['--disable-blink-features=AutomationControlled'],
-    });
+    const launchArgs = [
+      '--disable-blink-features=AutomationControlled',
+      '--no-sandbox',
+      '--disable-setuid-sandbox',
+      '--disable-dev-shm-usage',
+    ];
+
+    try {
+      browser = await chromium.launch({
+        headless,
+        slowMo,
+        args: launchArgs,
+      });
+    } catch (launchErr) {
+      if (launchErr.message.includes("doesn't exist") || launchErr.message.includes('playwright install')) {
+        logger.warn('Playwright browser binary not found at launch path. Attempting auto-installation...');
+        const { execSync } = require('child_process');
+        execSync('npx playwright install chromium', {
+          stdio: 'inherit',
+          env: { ...process.env, PLAYWRIGHT_BROWSERS_PATH: process.env.PLAYWRIGHT_BROWSERS_PATH || '0' },
+        });
+        browser = await chromium.launch({
+          headless,
+          slowMo,
+          args: launchArgs,
+        });
+      } else {
+        throw launchErr;
+      }
+    }
 
     context = await browser.newContext({
       userAgent:

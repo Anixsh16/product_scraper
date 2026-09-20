@@ -5,6 +5,7 @@
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",
+    "build": "npx playwright install chromium",
     "dev": "node --watch src/server.js",
     "migrate": "node src/scripts/migrate.js",
     "scrape:headed": "node src/scraper/headedRunner.js",
